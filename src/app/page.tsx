@@ -12,7 +12,6 @@ export default function Home() {
       </div>
 
       <div className="h-screen w-full"></div>
-      
     </div>
   );
 }

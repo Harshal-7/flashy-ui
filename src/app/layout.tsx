@@ -22,13 +22,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { setUser, clearUser, setIsAuthenticated, refreshTrigger } = useUserStore();
+  const { setUser, clearUser, setIsAuthenticated, refreshTrigger } =
+    useUserStore();
 
   useEffect(() => {
     const fetchAuthState = async () => {
       try {
         const isAuth = await authenticated();
-        
+
         if (isAuth) {
           setIsAuthenticated(true);
           const user = await getCurrentUser();

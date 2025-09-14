@@ -42,8 +42,8 @@ export const post = async <T = any>(
     withCredentials: true,
   };
 
-  console.log('-----data:',data);
-  console.log('-----type data:',typeof data);
+  console.log("-----data:", data);
+  console.log("-----type data:", typeof data);
 
   try {
     const res: AxiosResponse<T> = await axios.post(
@@ -54,7 +54,7 @@ export const post = async <T = any>(
 
     return { error: "", data: res.data, success: true };
   } catch (error: any) {
-    console.log('-------error:',error)
+    console.log("-------error:", error);
 
     const errorMessage =
       error.response?.data?.message || error.message || "Request failed";
@@ -165,4 +165,3 @@ export const del = async <T = any>(
     };
   }
 };
-

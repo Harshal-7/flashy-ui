@@ -6,7 +6,7 @@ import * as z from "zod";
 
 export const register = async (data: z.infer<typeof RegisterSchema>) => {
   try {
-    const result = await post('user', data);
+    const result = await post("user", data);
 
     return {
       success: true,

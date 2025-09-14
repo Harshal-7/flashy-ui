@@ -32,7 +32,7 @@ export const Header = () => {
   const [myOpacity, setMyOpacity] = useState(false);
   const user = useUserStore((state) => state.user);
   const clearUser = useUserStore((state) => state.clearUser);
-  const {setIsAuthenticated} = useUserStore();
+  const { setIsAuthenticated } = useUserStore();
 
   const handleHamburgerMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -61,7 +61,7 @@ export const Header = () => {
       className={cn(
         "flex w-full shadow z-50]",
         scrollClass,
-        path === "/create-card" ? "relative" : "sticky top-0 left-0"
+        path === "/create-card" ? "relative" : "sticky top-0 left-0",
       )}
     >
       <div className="flex w-full max-w-7xl mx-auto justify-between items-center relative">
@@ -172,7 +172,7 @@ export const Header = () => {
         {isMenuOpen && (
           <div
             className={cn(
-              "md:hidden flex flex-col opacity-100 items-center gap-6 absolute bg-primary text-white w-full top-0 left-0 pt-20 pb-10 transition-all duration-500 ease-in-out z-40"
+              "md:hidden flex flex-col opacity-100 items-center gap-6 absolute bg-primary text-white w-full top-0 left-0 pt-20 pb-10 transition-all duration-500 ease-in-out z-40",
             )}
           >
             <Link

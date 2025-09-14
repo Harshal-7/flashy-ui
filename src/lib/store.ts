@@ -29,18 +29,22 @@ const useUserStore = create<State>()(
       setUser: (user: User) => set({ user }),
       setIsAuthenticated: (value: boolean) => set({ isAuthenticated: value }),
       clearUser: () => set({ user: null }),
-      triggerRefresh: () => set((state: any) => ({ refreshTrigger: state.refreshTrigger + 1 })),
+      triggerRefresh: () =>
+        set((state: any) => ({ refreshTrigger: state.refreshTrigger + 1 })),
     }),
     {
-      name: 'user-storage',
-      storage: typeof window !== 'undefined' ? createJSONStorage(() => localStorage) : undefined,
+      name: "user-storage",
+      storage:
+        typeof window !== "undefined"
+          ? createJSONStorage(() => localStorage)
+          : undefined,
       onRehydrateStorage: () => (state: any) => {
         if (state) {
           state.fetchingUserInfo = false;
         }
       },
-    }
-  )
+    },
+  ),
 );
 
 export default useUserStore;
