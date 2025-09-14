@@ -14,7 +14,7 @@ export const login = async <T = any>(data: z.infer<typeof LoginSchema>) => {
   try {
     const response: AxiosResponse<T> = await axios.post(
       `${API_URL}/auth/login`,
-      data
+      data,
     );
 
     await setAuthCookie(response);
@@ -33,14 +33,13 @@ export const login = async <T = any>(data: z.infer<typeof LoginSchema>) => {
 const setAuthCookie = async (response: AxiosResponse) => {
   const setCookieHeader = response.headers["set-cookie"];
 
-
   if (!setCookieHeader || !Array.isArray(setCookieHeader)) {
     throw new Error("No set-cookie header found in response");
   }
 
   // Find the cookie that starts with "access_token="
   const accessTokenCookie = setCookieHeader.find((cookieStr) =>
-    cookieStr.startsWith("access_token=")
+    cookieStr.startsWith("access_token="),
   );
 
   if (!accessTokenCookie) {
@@ -49,7 +48,14 @@ const setAuthCookie = async (response: AxiosResponse) => {
 
   const token = accessTokenCookie.split(";")[0].split("=")[1];
 
-  const decoded: { id: number; email: string; username: string; iat: number; exp: number; image?: string } = jwtDecode(token);
+  const decoded: {
+    id: number;
+    email: string;
+    username: string;
+    iat: number;
+    exp: number;
+    image?: string;
+  } = jwtDecode(token);
 
   (await cookies()).set({
     name: AUTHENTICATION_COOKIE,
