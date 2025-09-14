@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { MenuIcon, Plus, User, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import MyLoginBtn from "./ui/myBtn";
 import { Fragment, useState } from "react";
 import {
@@ -16,17 +16,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "./ui/separator";
 import { useScrollPosition } from "@/hooks/use-scroll";
+import useUserStore from "@/lib/store";
+import logout from "@/actions/logout";
+import { toast } from "sonner";
 
 const font = Poppins({ subsets: ["latin"], weight: ["300", "400", "600"] });
 
 export const Header = () => {
   const path = usePathname();
+  const router = useRouter();
   const isScrolled = useScrollPosition();
   const scrollClass = isScrolled ? "shadow bg-background" : "shadow-none";
-  // const scrollClass = isScrolled ? "shadow-none bg-background" : "shadow-none";
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [myOpacity, setMyOpacity] = useState(false);
+  const user = useUserStore((state) => state.user);
+  const clearUser = useUserStore((state) => state.clearUser);
+  const {setIsAuthenticated} = useUserStore();
 
   const handleHamburgerMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -43,9 +49,11 @@ export const Header = () => {
     return <Fragment></Fragment>;
   }
 
-  const handleLogout = () => {
-    setIsMenuOpen((prev) => !prev);
-    // signOut({ redirectTo: "/" });
+  const handleLogout = async () => {
+    clearUser();
+    setIsAuthenticated(false);
+    toast("Logged out successfully");
+    await logout();
   };
 
   return (
@@ -95,30 +103,19 @@ export const Header = () => {
             <span className="">Library</span>
           </Link>
 
-          <Link
-              href="/login"
-              className={`flex items-center gap-1 text-base p-0 group hover:text-primary transition-all duration-300 ${
-                path === "/library"
-                  ? "font-bold text-primary"
-                  : "text-neutral-700 font-medium"
-              }`}
-            >
-              <MyLoginBtn />
-            </Link>
-
           {/* User - Login */}
-          {/* {true ? (
+          {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-all duration-150 text-neutral-700 font-medium">
+              <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-all duration-150 text-neutral-700 font-medium cursor-pointer">
                 <User className="w-5 h-5 self-center" />
-                <span> {session?.user?.name}</span>
+                <span> {user?.username}</span>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="p-2 mt-2 w-72">
                 <DropdownMenuLabel className="flex flex-row items-center gap-2 px-2 pb-2">
-                  {session?.user?.image?.length > 0 ? (
+                  {user?.image && user.image.length > 0 ? (
                     <img
-                      src={session?.user?.image}
+                      src={user?.image}
                       alt="pfp"
                       className="h-full max-h-12 object-cover "
                     />
@@ -127,16 +124,21 @@ export const Header = () => {
                   )}
 
                   <div className="flex flex-col">
-                    <div className="text-base">{session?.user?.name}</div>
-                    <div>{session?.user?.email}</div>
+                    <div className="text-base">{user?.username}</div>
+                    <div>{user?.email}</div>
                   </div>
                 </DropdownMenuLabel>
                 <Separator />
                 <DropdownMenuItem>Privacy Policy</DropdownMenuItem>
                 <DropdownMenuItem>Help</DropdownMenuItem>
                 <Separator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <button onClick={handleLogout}>Logout</button>
+                <DropdownMenuItem className="w-full">
+                  <button
+                    className="cursor-pointer w-full text-start"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -151,7 +153,7 @@ export const Header = () => {
             >
               <MyLoginBtn />
             </Link>
-          )} */}
+          )}
         </div>
 
         {/* MOBILE : card, library, user  */}
@@ -197,16 +199,15 @@ export const Header = () => {
             </Link>
 
             <Link
-                href="/login"
-                onClick={() => setIsMenuOpen((prev) => !prev)}
-                className="text-white text-xl transition-all duration-300"
-              >
-                Login
-              </Link>
-
+              href="/login"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              className="text-white text-xl transition-all duration-300"
+            >
+              Login
+            </Link>
 
             {/* login */}
-            {/* {session?.user?.name ? (
+            {user?.username ? (
               <button
                 className="text-white text-xl transition-all duration-300"
                 onClick={handleLogout}
@@ -221,7 +222,7 @@ export const Header = () => {
               >
                 Login
               </Link>
-            )} */}
+            )}
           </div>
         )}
       </div>

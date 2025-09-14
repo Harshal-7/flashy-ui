@@ -15,10 +15,9 @@ import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { RegisterSchema } from "@/schema/RegisterSchema";
-// import { register } from "@/actions/register";
+import { register } from "@/actions/register";
 import GoogleIcon from "../ui/google";
-import { toast } from "sonner"
-
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -26,11 +25,12 @@ const RegisterForm = () => {
   const [isContainValues, setIsContainValues] = useState(false);
 
   const path = usePathname();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
     },
@@ -38,32 +38,33 @@ const RegisterForm = () => {
 
   const watchedValues = form.watch();
 
-
   useEffect(() => {
-     if (
-      watchedValues.email?.length > 1 ||
-      watchedValues.password?.length > 1
-    ) {
+    if (watchedValues.email?.length > 1 || watchedValues.password?.length > 1) {
       setIsContainValues(true);
     } else {
       setIsContainValues(false);
     }
-  }, [watchedValues.name, watchedValues.email, watchedValues.password]);
+  }, [watchedValues.username, watchedValues.email, watchedValues.password]);
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
     setLoading(true);
+    try {
+      const result = await register(values);
 
-    // register(values).then((res) => {
-    //   if (res.error) {
-    //     toast.error(res?.error)
-    //   } else if (res.success) {
-    //     toast.message( res.success, {
-    //       description: "Login to access dashboard",
-    //     })
-    //     setLoading(false);
-    //     router.replace(`/login`);
-    //   }
-    // });
+      if (result?.success) {
+        toast.message(result.message, {
+          description: "Login to access dashboard",
+        });
+        setLoading(false);
+        router.replace(`/login`);
+      } else {
+        toast.error(result?.error || "Failed to create user");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -100,7 +101,7 @@ const RegisterForm = () => {
             {/* ENTER NAME  */}
             <FormField
               control={form.control}
-              name="name"
+              name="username"
               render={({ field }) => (
                 <FormItem className="flex flex-col relative">
                   <FormControl>
