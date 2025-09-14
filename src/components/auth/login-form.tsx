@@ -16,15 +16,18 @@ import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import GoogleIcon from "../ui/google";
-import { toast } from "sonner"
-// import { login } from "@/actions/login";
+import { toast } from "sonner";
+import { login } from "@/actions/login";
+import useUserStore from "@/lib/store";
 
 const LoginForm = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isContainValues, setIsContainValues] = useState(false);
+  const { triggerRefresh } = useUserStore();
 
   const path = usePathname();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -37,36 +40,32 @@ const LoginForm = () => {
   const watchedValues = form.watch();
 
   //  To update the LOG-IN button and Login-By-Google-Button
-  useEffect(() => {    
-    if (
-      watchedValues.email?.length > 1 ||
-      watchedValues.password?.length > 1
-    ) {
+  useEffect(() => {
+    if (watchedValues.email?.length > 1 || watchedValues.password?.length > 1) {
       setIsContainValues(true);
     } else {
       setIsContainValues(false);
     }
   }, [watchedValues.email, watchedValues.password]);
 
-  const onSubmit = (data: z.infer<typeof LoginSchema>) => {
+  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     setLoading(true);
 
-    //User validation and authentication
-    // login(data)
-    //   .then((res: any) => {
-    //     if (res?.error) {
-    //       toast.error(res?.error)
-    //     } else {
-    //       toast("User Logged In Successfully")
-    //     }
-    //     setLoading(false);
-    //     return;
-    //   })
-    //   .catch((err: any) => {
-    //     toast.error(err)
-    //     setLoading(false);
-    //     return;
-    //   });
+    try {
+      const result = await login(data);
+
+      if (result?.success) {
+        toast("User Logged In Successfully");
+        triggerRefresh();
+        router.push("/");
+      } else {
+        toast.error(result?.error || "Login failed");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
