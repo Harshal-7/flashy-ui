@@ -4,11 +4,9 @@ import { LoginSchema } from "@/schema/LoginSchema";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 import * as z from "zod";
-import { post } from "@/utils/fetch";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { getErrorMessage } from "@/utils/errors";
 import { API_URL, AUTHENTICATION_COOKIE } from "@/lib/constant";
-import useUserStore from "@/lib/store";
 
 export const login = async <T = any>(data: z.infer<typeof LoginSchema>) => {
   try {
@@ -19,13 +17,22 @@ export const login = async <T = any>(data: z.infer<typeof LoginSchema>) => {
 
     await setAuthCookie(response);
 
-    return { success: true, data: response.data };
+    return { 
+      success: true, 
+      data: response.data,
+      error: null
+    };
   } catch (error: any) {
+
     const errorMessage =
-      error.response?.data?.message || error.message || "Request failed";
+      error.response.data?.message ||
+      error.response.data?.error ||
+      "Login failed";
+
     return {
       success: false,
-      error: getErrorMessage(errorMessage),
+      data: null,
+      error: errorMessage,
     };
   }
 };
