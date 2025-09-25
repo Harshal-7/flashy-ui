@@ -4,12 +4,13 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Header } from "@/components/Header";
+import { LandingHeader } from "@/components/LandingHeader";
 import { Toaster } from "@/components/ui/sonner";
 import useUserStore from "@/lib/store";
 import { useEffect } from "react";
 import authenticated from "@/actions/authenticated";
 import getCurrentUser from "@/actions/user";
+import { usePathname } from "next/navigation";
 
 // export const metadata: Metadata = {
 //   title: "Flashy",
@@ -24,6 +25,9 @@ export default function RootLayout({
 }>) {
   const { setUser, clearUser, setIsAuthenticated, refreshTrigger } =
     useUserStore();
+  const pathname = usePathname();
+  const showLandingHeader =
+    pathname === "/" || pathname.startsWith("/login") || pathname.startsWith("/register");
 
   useEffect(() => {
     const fetchAuthState = async () => {
@@ -54,7 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn("antialiased")}>
-        <Header />
+        {showLandingHeader && <LandingHeader />}
         {children}
         <Toaster richColors />
       </body>

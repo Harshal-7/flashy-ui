@@ -19,11 +19,10 @@ import { useScrollPosition } from "@/hooks/use-scroll";
 import useUserStore from "@/lib/store";
 import logout from "@/actions/logout";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const font = Poppins({ subsets: ["latin"], weight: ["300", "400", "600"] });
 
-export const Header = () => {
+export const LandingHeader = () => {
   const path = usePathname();
   const router = useRouter();
   const isScrolled = useScrollPosition();
@@ -58,52 +57,61 @@ export const Header = () => {
   };
 
   return (
-    <div className={cn("fixed w-full z-50 h-20 top-0 left-0 bg-background")}>
-      <div className="flex w-full mx-auto justify-between items-center relative">
+    <div
+      className={cn(
+        "flex w-full shadow z-50]",
+        scrollClass,
+        path === "/create-card" ? "relative" : "sticky top-0 left-0",
+      )}
+    >
+      <div className="flex w-full max-w-7xl mx-auto justify-between items-center relative">
         {/* logo */}
         <Link
           href="/"
-          className="flex gap-1 md:gap-1.5 items-center py-5 px-6 text-primary"
+          className="flex gap-1 md:gap-1.5 items-center py-5 px-8 text-primary"
         >
           <Zap className="w-5 md:w-6 h-5 md:h-6" />
-          <span className={cn("text-xl md:text-2xl font-bold", font.className)}>
+          <span className={cn("text-xl md:text-3xl font-bold", font.className)}>
             flashy
           </span>
         </Link>
 
         {/* card, library, user  */}
-        <div className="hidden md:flex items-center gap-5 px-6">
-          {/* start-with-ai  */}
-
+        <div className="hidden md:flex items-center gap-8 px-6">
+          {/* create card  */}
           <Link
-            href="/home"
-            className={`flex items-center gap-1 p-0 group hover:text-primary transition-all duration-150 ${
+            href="/create-card"
+            className={`flex items-center gap-1 text-base p-0 group hover:text-primary transition-all duration-150 ${
+              path === "/create-card"
+                ? "font-bold text-primary"
+                : "text-neutral-700 font-medium"
+            }`}
+          >
+            <span className="">Create Card</span>
+            <Plus className="w-4 h-4" />
+          </Link>
+
+          {/* library  */}
+          <Link
+            href="/library"
+            className={`flex items-center gap-1 text-base p-0 group hover:text-primary transition-all duration-150 ${
               path === "/library"
                 ? "font-bold text-primary"
                 : "text-neutral-700 font-medium"
             }`}
           >
-            <span
-              className="px-5 py-2 font-semibold rounded-full flex items-center gap-1.5 cursor-pointer text-white bg-black
-                transition-all duration-300 hover:text-white hover:bg-primary"
-            >
-              Upgrade to Pro
-            </span>
+            <span className="">Library</span>
           </Link>
 
           {/* User - Login */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-all duration-150 text-neutral-700 font-medium cursor-pointer">
-                {/* <User className="w-8 h-8 p-0.5 self-center rounded-full border border-black/30" /> */}
-
-                <Avatar className="size-10">
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <User className="w-5 h-5 self-center" />
+                <span> {user?.username}</span>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="p-2 w-72">
+              <DropdownMenuContent className="p-2 mt-2 w-72">
                 <DropdownMenuLabel className="flex flex-row items-center gap-2 px-2 pb-2">
                   {user?.image && user.image.length > 0 ? (
                     <img
@@ -164,7 +172,7 @@ export const Header = () => {
         {isMenuOpen && (
           <div
             className={cn(
-              "md:hidden flex flex-col opacity-100 items-center gap-6 absolute bg-primary text-white w-full top-0 left-0 pt-20 pb-10 transition-all duration-500 ease-in-out z-40"
+              "md:hidden flex flex-col opacity-100 items-center gap-6 absolute bg-primary text-white w-full top-0 left-0 pt-20 pb-10 transition-all duration-500 ease-in-out z-40",
             )}
           >
             <Link

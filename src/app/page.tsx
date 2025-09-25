@@ -1,6 +1,6 @@
 import HeroSection from "@/components/Hero";
 
-export default function Home() {
+export default function LandingPage() {
   return (
     <div className="flex flex-col w-full max-w-7xl mx-auto justify-center items-center gap-5 ">
       {/* Hero Section  */}
